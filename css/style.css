@@ -1,0 +1,655 @@
+/* =============================================
+   VARIABLES & RESET
+   ============================================= */
+:root {
+    --pink: #ff8fab;
+    --pink-light: #ffc8d8;
+    --pink-pale: #fff0f5;
+    --peach: #ffb347;
+    --peach-light: #ffe5b4;
+    --cream: #fff8f0;
+    --brown: #7a4f3a;
+    --brown-mid: #a0634a;
+    --purple: #c77dff;
+    --purple-soft: #e8c7ff;
+    --green: #80ed99;
+    --text-dark: #3d2c2c;
+    --text-mid: #6b4c4c;
+    --shadow: 0 8px 32px rgba(180, 80, 100, 0.18);
+    --radius: 24px;
+    --radius-sm: 14px;
+
+    /* Tamaño del gatito: se ajusta por breakpoint */
+    --cat-size: 72px;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    /* evita scroll horizontal en móvil */
+    overflow-x: hidden;
+}
+
+body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--pink-pale);
+    min-height: 100dvh; /* dvh soporta barra del navegador móvil */
+    overflow: hidden;
+    color: var(--text-dark);
+    background-image:
+        radial-gradient(ellipse at 20% 10%, #ffd6e7 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 90%, #e8c7ff 0%, transparent 50%),
+        radial-gradient(ellipse at 60% 40%, #ffe5b4 0%, transparent 40%);
+}
+
+/* =============================================
+   SCREENS
+   ============================================= */
+.screen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    z-index: 10;
+    /* permite scroll interno si la pantalla es pequeña */
+    overflow-y: auto;
+    padding: 16px;
+}
+
+.screen.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* El juego ocupa toda la pantalla */
+#screen-game {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 0;
+    overflow: hidden;
+}
+
+/* =============================================
+   PANTALLA INICIO
+   ============================================= */
+.start-card {
+    background: white;
+    border-radius: 28px;
+    padding: 28px 20px 24px;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: var(--shadow), 0 0 0 5px var(--pink-light);
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    animation: card-in 0.6s cubic-bezier(.34, 1.56, .64, 1) both;
+    /* no se sale de pantalla en móvil */
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+}
+
+@keyframes card-in {
+    from {
+        transform: translateY(40px) scale(0.92);
+        opacity: 0;
+    }
+
+    to {
+        transform: none;
+        opacity: 1;
+    }
+}
+
+.title-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.game-title {
+    font-family: 'Pacifico', cursive;
+    font-size: clamp(1.5rem, 5vw, 2.2rem);
+    line-height: 1.15;
+    color: var(--brown);
+    text-align: left;
+}
+
+.game-title span {
+    color: var(--pink);
+}
+
+.cat-emoji-big {
+    font-size: clamp(2.5rem, 8vw, 3.8rem);
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(-5deg);
+    }
+
+    50% {
+        transform: translateY(-10px) rotate(5deg);
+    }
+}
+
+.subtitle {
+    color: var(--text-mid);
+    font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.difficulty-wrap {
+    margin-bottom: 20px;
+}
+
+.diff-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-mid);
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.diff-btns {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+}
+
+.diff-btn {
+    flex: 1;
+    padding: 10px 4px;
+    border: 2.5px solid var(--pink-light);
+    border-radius: var(--radius-sm);
+    background: white;
+    color: var(--text-mid);
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(0.72rem, 2.5vw, 0.85rem);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    /* área táctil mínima recomendada */
+    min-height: 44px;
+    touch-action: manipulation;
+}
+
+.diff-btn:hover {
+    border-color: var(--pink);
+    color: var(--pink);
+}
+
+.diff-btn.active {
+    background: var(--pink);
+    border-color: var(--pink);
+    color: white;
+    box-shadow: 0 4px 14px rgba(255, 143, 171, 0.4);
+}
+
+.btn-main {
+    display: inline-block;
+    padding: 14px 36px;
+    background: linear-gradient(135deg, var(--pink), #ff6b9d);
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(0.95rem, 3vw, 1.1rem);
+    font-weight: 800;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.45);
+    transition: transform 0.15s, box-shadow 0.15s;
+    letter-spacing: 0.5px;
+    min-height: 48px;
+    touch-action: manipulation;
+    width: 100%;
+    max-width: 280px;
+}
+
+.btn-main:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(255, 107, 157, 0.5);
+}
+
+.btn-main:active {
+    transform: translateY(1px);
+}
+
+.paw-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cellipse cx='40' cy='50' rx='16' ry='12' fill='%23ffccd5' opacity='.3'/%3E%3Ccircle cx='22' cy='32' r='6' fill='%23ffccd5' opacity='.3'/%3E%3Ccircle cx='34' cy='24' r='6' fill='%23ffccd5' opacity='.3'/%3E%3Ccircle cx='46' cy='24' r='6' fill='%23ffccd5' opacity='.3'/%3E%3Ccircle cx='58' cy='32' r='6' fill='%23ffccd5' opacity='.3'/%3E%3C/svg%3E");
+    background-size: 80px 80px;
+}
+
+/* =============================================
+   HUD
+   ============================================= */
+.hud {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px 8px;
+    background: white;
+    box-shadow: 0 2px 16px rgba(180, 80, 100, 0.10);
+    position: relative;
+    z-index: 5;
+    /* Respeta la safe area del notch en iOS */
+    padding-top: max(10px, env(safe-area-inset-top));
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+}
+
+.hud-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 56px;
+}
+
+.hud-block.center {
+    flex: 1;
+}
+
+.hud-label {
+    font-size: clamp(0.55rem, 1.8vw, 0.7rem);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-mid);
+    font-weight: 700;
+}
+
+.hud-value {
+    font-family: 'Pacifico', cursive;
+    font-size: clamp(1.3rem, 5vw, 1.8rem);
+    color: var(--brown);
+    line-height: 1.1;
+    transition: transform 0.15s;
+}
+
+.hud-value.pop {
+    animation: pop 0.3s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+@keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+}
+
+.level-stars {
+    font-size: clamp(1rem, 3.5vw, 1.4rem);
+    letter-spacing: 2px;
+}
+
+/* BARRA DE TIEMPO DEL GATITO */
+.catch-bar-wrap {
+    height: 6px;
+    background: var(--pink-light);
+    position: relative;
+    z-index: 4;
+}
+
+#catch-bar {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, var(--pink), var(--peach));
+    transform-origin: left;
+    transition: width 0.1s linear;
+    border-radius: 0 4px 4px 0;
+}
+
+#catch-bar.urgent {
+    background: linear-gradient(90deg, #ff4d4d, #ff8c00);
+}
+
+/* =============================================
+   ÁREA DE JUEGO
+   ============================================= */
+.game-area {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+    /* Respeta safe-area en la parte inferior (home bar de iOS) */
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* =============================================
+   GATITO — tamaño dinámico via CSS custom property
+   ============================================= */
+.cat {
+    position: absolute;
+    width: var(--cat-size);
+    height: var(--cat-size);
+    cursor: pointer;
+    user-select: none;
+    z-index: 10;
+    transition:
+        left 0.25s cubic-bezier(.34, 1.4, .64, 1),
+        top  0.25s cubic-bezier(.34, 1.4, .64, 1);
+    filter: drop-shadow(0 6px 18px rgba(180, 80, 100, 0.25));
+    /* área táctil mínima para dedos */
+    touch-action: manipulation;
+}
+
+.cat.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.cat.visible {
+    opacity: 1;
+    pointer-events: all;
+    animation: cat-appear 0.3s cubic-bezier(.34, 1.56, .64, 1) both;
+}
+
+@keyframes cat-appear {
+    from { transform: scale(0) rotate(-10deg); }
+    to   { transform: scale(1) rotate(0deg); }
+}
+
+.cat.caught {
+    animation: cat-caught 0.4s ease both;
+}
+
+@keyframes cat-caught {
+    0%   { transform: scale(1); }
+    30%  { transform: scale(1.3) rotate(10deg); }
+    60%  { transform: scale(0.85) rotate(-5deg); }
+    100% { transform: scale(0) rotate(20deg); opacity: 0; }
+}
+
+.cat.escaped {
+    animation: cat-escape 0.4s ease both;
+}
+
+@keyframes cat-escape {
+    0%   { transform: scale(1); opacity: 1; }
+    100% { transform: scale(0) translateY(-30px); opacity: 0; }
+}
+
+.cat-face {
+    width: var(--cat-size);
+    height: var(--cat-size);
+}
+
+.cat-face svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Burbuja de mensaje */
+.cat-msg {
+    position: absolute;
+    bottom: 108%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border: 2.5px solid var(--pink-light);
+    border-radius: 16px 16px 16px 4px;
+    padding: 6px 12px;
+    font-size: clamp(0.65rem, 2.5vw, 0.75rem);
+    font-weight: 700;
+    color: var(--brown);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+    box-shadow: 0 4px 14px rgba(180, 80, 100, 0.15);
+}
+
+.cat-msg.show {
+    opacity: 1;
+}
+
+/* =============================================
+   PARTÍCULAS / CORAZONES
+   ============================================= */
+.particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 20;
+}
+
+.particle {
+    position: absolute;
+    font-size: clamp(1rem, 3vw, 1.3rem);
+    pointer-events: none;
+    animation: particle-fly 0.9s ease-out forwards;
+}
+
+@keyframes particle-fly {
+    0%   { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-70px) scale(0.4); }
+}
+
+/* =============================================
+   STREAK BANNER
+   ============================================= */
+.streak-banner {
+    position: fixed;
+    top: clamp(60px, 12vh, 90px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--peach), #ffcc02);
+    color: white;
+    font-family: 'Pacifico', cursive;
+    font-size: clamp(0.85rem, 3vw, 1.1rem);
+    padding: 8px 22px;
+    border-radius: 50px;
+    box-shadow: 0 6px 24px rgba(255, 179, 71, 0.45);
+    z-index: 30;
+    white-space: nowrap;
+    animation: banner-in 0.4s cubic-bezier(.34, 1.56, .64, 1) both;
+    max-width: 90vw;
+    text-align: center;
+}
+
+.streak-banner.hidden {
+    display: none;
+}
+
+@keyframes banner-in {
+    from {
+        transform: translateX(-50%) translateY(-20px) scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(-50%) translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+/* =============================================
+   PANTALLA FIN
+   ============================================= */
+.end-card {
+    background: white;
+    border-radius: 28px;
+    padding: 28px 20px 24px;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: var(--shadow), 0 0 0 5px var(--purple-soft);
+    text-align: center;
+    animation: card-in 0.6s cubic-bezier(.34, 1.56, .64, 1) both;
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+}
+
+.end-emoji {
+    font-size: clamp(2.8rem, 9vw, 4rem);
+    margin-bottom: 10px;
+    animation: float 3s ease-in-out infinite;
+}
+
+.end-title {
+    font-family: 'Pacifico', cursive;
+    font-size: clamp(1.5rem, 5vw, 2rem);
+    color: var(--brown);
+    margin-bottom: 6px;
+}
+
+.end-msg {
+    color: var(--text-mid);
+    font-size: clamp(0.85rem, 2.8vw, 1rem);
+    margin-bottom: 22px;
+}
+
+.end-stats {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 22px;
+}
+
+.stat-box {
+    flex: 1;
+    background: var(--pink-pale);
+    border-radius: 16px;
+    padding: 14px 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 0; /* evita overflow en flex */
+}
+
+.stat-num {
+    font-family: 'Pacifico', cursive;
+    font-size: clamp(1.3rem, 5vw, 1.8rem);
+    color: var(--pink);
+}
+
+.stat-lbl {
+    font-size: clamp(0.6rem, 2vw, 0.7rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-mid);
+}
+
+.end-btns {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-secondary {
+    padding: 14px 24px;
+    background: transparent;
+    border: 2.5px solid var(--pink-light);
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(0.85rem, 3vw, 1rem);
+    font-weight: 800;
+    color: var(--text-mid);
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 48px;
+    touch-action: manipulation;
+    flex: 1;
+    max-width: 180px;
+}
+
+.btn-secondary:hover {
+    border-color: var(--pink);
+    color: var(--pink);
+}
+
+/* =============================================
+   RESPONSIVE BREAKPOINTS
+   ============================================= */
+
+/* ── Móvil pequeño (< 360px) ── */
+@media (max-width: 359px) {
+    :root { --cat-size: 58px; }
+
+    .game-title { font-size: 1.3rem; }
+    .start-card,
+    .end-card   { padding: 20px 14px; border-radius: 20px; }
+    .diff-btn   { font-size: 0.7rem; padding: 8px 2px; }
+    .end-stats  { gap: 6px; }
+    .stat-box   { padding: 10px 4px; }
+}
+
+/* ── Móvil estándar (360px – 479px) ── */
+@media (min-width: 360px) and (max-width: 479px) {
+    :root { --cat-size: 70px; }
+}
+
+/* ── Tablet portrait (480px – 767px) ── */
+@media (min-width: 480px) and (max-width: 767px) {
+    :root { --cat-size: 88px; }
+
+    .start-card,
+    .end-card   { padding: 36px 28px; max-width: 460px; }
+    .game-title { font-size: 2rem; }
+}
+
+/* ── Tablet landscape / escritorio pequeño (768px – 1023px) ── */
+@media (min-width: 768px) and (max-width: 1023px) {
+    :root { --cat-size: 100px; }
+
+    .start-card,
+    .end-card   { padding: 40px 36px; }
+    .game-title { font-size: 2.2rem; }
+    .hud        { padding: 14px 28px 10px; }
+    .catch-bar-wrap { height: 7px; }
+}
+
+/* ── Escritorio (≥ 1024px) ── */
+@media (min-width: 1024px) {
+    :root { --cat-size: 110px; }
+
+    .start-card,
+    .end-card   { padding: 48px 44px; max-width: 440px; border-radius: 32px; }
+    .game-title { font-size: 2.4rem; }
+    .hud        { padding: 16px 36px 12px; }
+}
+
+/* ── Landscape móvil (altura < 500px) ── */
+@media (max-height: 499px) and (orientation: landscape) {
+    :root { --cat-size: 60px; }
+
+    .start-card,
+    .end-card {
+        padding: 16px 20px;
+        border-radius: 18px;
+        max-height: 95dvh;
+    }
+
+    .title-wrap    { margin-bottom: 4px; }
+    .subtitle      { margin-bottom: 10px; font-size: 0.75rem; }
+    .difficulty-wrap { margin-bottom: 10px; }
+    .cat-emoji-big { font-size: 2rem; }
+    .end-emoji     { font-size: 2rem; margin-bottom: 4px; }
+    .end-msg       { margin-bottom: 12px; }
+    .end-stats     { margin-bottom: 12px; }
+    .hud           { padding: 6px 16px 4px; }
+    .hud-value     { font-size: 1.2rem; }
+    .streak-banner { top: 48px; }
+}
